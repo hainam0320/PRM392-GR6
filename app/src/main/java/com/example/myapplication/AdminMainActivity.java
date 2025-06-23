@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.adapter.ProductAdapter;
+import com.example.myapplication.adapter.AdminProductAdapter;
 import com.example.myapplication.model.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,9 +20,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class AdminMainActivity extends AppCompatActivity {
+public class AdminMainActivity extends AppCompatActivity implements AdminProductAdapter.OnProductClickListener {
     private RecyclerView recyclerView;
-    private ProductAdapter productAdapter;
+    private AdminProductAdapter productAdapter;
     private ArrayList<Product> productList;
     private FirebaseFirestore db;
     private FloatingActionButton fabAdd;
@@ -36,7 +36,7 @@ public class AdminMainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewProducts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, productList);
+        productAdapter = new AdminProductAdapter(productList, this);
         recyclerView.setAdapter(productAdapter);
 
         db = FirebaseFirestore.getInstance();
@@ -82,5 +82,12 @@ public class AdminMainActivity extends AppCompatActivity {
                     }
                     productAdapter.notifyDataSetChanged();
                 });
+    }
+
+    @Override
+    public void onProductClick(Product product) {
+        Intent intent = new Intent(this, EditProductActivity.class);
+        intent.putExtra("productId", product.getId());
+        startActivity(intent);
     }
 }

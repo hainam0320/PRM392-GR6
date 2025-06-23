@@ -1,75 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#F5F5F5">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thông tin sản phẩm"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"/>
 
         <!-- Tên sản phẩm -->
-        <EditText
-            android:id="@+id/editProductName"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên sản phẩm" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tên sản phẩm"
+                android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Giá -->
-        <EditText
-            android:id="@+id/editProductPrice"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Giá"
-            android:inputType="numberDecimal" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Giá (VNĐ)"
+                android:inputType="numberDecimal"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Số lượng -->
-        <EditText
-            android:id="@+id/editProductStock"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Số lượng tồn kho"
-            android:inputType="number" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductStock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Số lượng tồn kho"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Thương hiệu -->
-        <EditText
-            android:id="@+id/editProductBrand"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Thương hiệu" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductBrand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Thương hiệu"
+                android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Loại -->
-        <EditText
-            android:id="@+id/editProductCategory"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Loại sản phẩm" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Loại sản phẩm"
+                android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Mô tả -->
-        <EditText
-            android:id="@+id/editProductDescription"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mô tả sản phẩm"
-            android:inputType="textMultiLine"
-            android:minLines="3" />
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <!-- Hình ảnh (chỉ nhập 1 URL) -->
-        <EditText
-            android:id="@+id/editProductImageUrl"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mô tả sản phẩm"
+                android:inputType="textMultiLine"
+                android:minLines="3"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Hình ảnh URL -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Link hình ảnh (URL)"
-            android:inputType="textUri" />
+            android:layout_marginBottom="24dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editProductImageUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Link hình ảnh (URL)"
+                android:inputType="textUri"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Nút Lưu -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSaveProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Lưu sản phẩm"
-            android:layout_marginTop="24dp" />
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="8dp"/>
+
+        <!-- Nút Xóa -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDeleteProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xóa sản phẩm"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:backgroundTint="#FF5252"
+            app:cornerRadius="8dp"/>
 
     </LinearLayout>
 </ScrollView>

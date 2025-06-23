@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                                             if (documentSnapshot.exists()) {
                                                 String role = documentSnapshot.getString("role");
                                                 if ("admin".equals(role)) {
-                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                                    Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
                                                     startActivity(intent);
                                                     finish();
                                                 } else {
