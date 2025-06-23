@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Tên sản phẩm -->
+        <EditText
+            android:id="@+id/editProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tên sản phẩm" />
+
+        <!-- Giá -->
+        <EditText
+            android:id="@+id/editProductPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Giá"
+            android:inputType="numberDecimal" />
+
+        <!-- Số lượng -->
+        <EditText
+            android:id="@+id/editProductStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số lượng tồn kho"
+            android:inputType="number" />
+
+        <!-- Thương hiệu -->
+        <EditText
+            android:id="@+id/editProductBrand"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Thương hiệu" />
+
+        <!-- Loại -->
+        <EditText
+            android:id="@+id/editProductCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Loại sản phẩm" />
+
+        <!-- Mô tả -->
+        <EditText
+            android:id="@+id/editProductDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mô tả sản phẩm"
+            android:inputType="textMultiLine"
+            android:minLines="3" />
+
+        <!-- Hình ảnh (chỉ nhập 1 URL) -->
+        <EditText
+            android:id="@+id/editProductImageUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Link hình ảnh (URL)"
+            android:inputType="textUri" />
+
+        <!-- Nút Lưu -->
+        <Button
+            android:id="@+id/buttonSaveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu sản phẩm"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>
