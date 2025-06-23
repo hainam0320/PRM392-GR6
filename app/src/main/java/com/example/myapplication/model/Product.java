@@ -5,7 +5,7 @@ import com.google.firebase.firestore.Exclude;
 import java.util.List;
 
 public class Product {
-    @Exclude
+
     private String id;
     private String name;
     private double price;

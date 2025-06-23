@@ -1,9 +1,9 @@
-// AdminMainActivity.java
 package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.adapter.ProductAdapter;
 import com.example.myapplication.model.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,6 +26,7 @@ public class AdminMainActivity extends AppCompatActivity {
     private ArrayList<Product> productList;
     private FirebaseFirestore db;
     private FloatingActionButton fabAdd;
+    private Button buttonLogout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +46,17 @@ public class AdminMainActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(AdminMainActivity.this, EditProductActivity.class);
             startActivity(intent);
+        });
+
+        // Xử lý nút Đăng xuất
+        buttonLogout = findViewById(R.id.buttonLogout);
+        buttonLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(AdminMainActivity.this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
     }
 

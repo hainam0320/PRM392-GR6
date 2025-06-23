@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Toast.makeText(LoginActivity.this, "Đăng nhập thành công.",
                                         Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
                                 startActivity(intent);
                                 finish(); // Finish LoginActivity so user can't go back to it
                             } else {
