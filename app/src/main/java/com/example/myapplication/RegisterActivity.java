@@ -12,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -67,10 +71,26 @@ public class RegisterActivity extends AppCompatActivity {
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(RegisterActivity.this, task -> {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Toast.makeText(RegisterActivity.this, "Đăng ký thành công.",
-                                        Toast.LENGTH_SHORT).show();
-                                finish(); // Go back to LoginActivity
+                                // Đăng ký thành công
+                                String userId = mAuth.getCurrentUser().getUid();
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                                // Tạo đối tượng user
+                                Map<String, Object> user = new HashMap<>();
+                                user.put("username", username);
+                                user.put("email", email);
+                                user.put("role", "user"); // hoặc "admin" nếu muốn
+
+                                // Lưu vào Firestore
+                                db.collection("users").document(userId)
+                                        .set(user)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(RegisterActivity.this, "Đăng ký thành công.", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(RegisterActivity.this, "Lỗi lưu thông tin: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        });
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(RegisterActivity.this, "Đăng ký thất bại: " + task.getException().getMessage(),
