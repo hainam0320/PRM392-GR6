@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -65,14 +67,32 @@ public class LoginActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(LoginActivity.this, task -> {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Toast.makeText(LoginActivity.this, "Đăng nhập thành công.",
-                                        Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish(); // Finish LoginActivity so user can't go back to it
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    String userId = user.getUid();
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                    db.collection("users").document(userId).get()
+                                        .addOnSuccessListener(documentSnapshot -> {
+                                            if (documentSnapshot.exists()) {
+                                                String role = documentSnapshot.getString("role");
+                                                if ("admin".equals(role)) {
+                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else {
+                                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            } else {
+                                                Toast.makeText(LoginActivity.this, "Không tìm thấy thông tin người dùng.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(LoginActivity.this, "Lỗi truy vấn role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                                }
                             } else {
-                                // If sign in fails, display a message to the user.
                                 Toast.makeText(LoginActivity.this, "Xác thực thất bại.",
                                         Toast.LENGTH_SHORT).show();
                             }
