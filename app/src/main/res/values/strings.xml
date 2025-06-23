@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="login_title">Đăng nhập</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Mật khẩu</string>
+    <string name="login_button">Đăng nhập</string>
+    <string name="go_to_register">Chưa có tài khoản? Đăng ký</string>
+    <string name="register_title">Đăng ký</string>
+    <string name="username_hint">Tên người dùng</string>
+    <string name="register_button">Đăng ký</string>
+    <string name="go_to_login">Đã có tài khoản? Đăng nhập</string>
+</resources>

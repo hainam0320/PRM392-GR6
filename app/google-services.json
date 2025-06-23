@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "494852197118",
+    "project_id": "appbangiay-6504b",
+    "storage_bucket": "appbangiay-6504b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494852197118:android:573d81bdc3a2488b0df3af",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEHg49xbwIp8UQnrwIZJAgG6Glze6z_BI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+  
+}
