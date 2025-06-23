@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Colors for tab indicator -->
+    <color name="indicator_active">#FF666666</color>
+    <color name="indicator_inactive">#FFCCCCCC</color>
 </resources>

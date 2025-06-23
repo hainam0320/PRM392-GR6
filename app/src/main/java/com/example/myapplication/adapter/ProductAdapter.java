@@ -1,90 +1,95 @@
-// ProductAdapter.java
 package com.example.myapplication.adapter;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.myapplication.EditProductActivity;
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Product;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
-    private Context context;
-    private List<Product> productList;
+    private List<Product> products;
+    private OnProductClickListener listener;
 
-    public ProductAdapter(Context context, List<Product> list) {
-        this.context = context;
-        this.productList = list;
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+        void onAddToCartClick(Product product);
+    }
+
+    public ProductAdapter(List<Product> products, OnProductClickListener listener) {
+        this.products = products;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_product, parent, false);
         return new ProductViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Product product = productList.get(position);
-        holder.textName.setText(product.getName());
-        holder.textPrice.setText("₫" + product.getPrice());
-
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, EditProductActivity.class);
-            intent.putExtra("productId", product.getId());
-            intent.putExtra("name", product.getName());
-            intent.putExtra("price", product.getPrice());
-            intent.putExtra("stock", product.getStock());
-            intent.putExtra("brand", product.getBrand());
-            intent.putExtra("category", product.getCategory());
-            intent.putExtra("description", product.getDescription());
-            if (product.getImage() != null && !product.getImage().isEmpty()) {
-                intent.putExtra("image", product.getImage().get(0));
-            }
-            context.startActivity(intent);
-        });
-
-        holder.btnDelete.setOnClickListener(v -> {
-            if (product.getId() == null) {
-                Toast.makeText(context, "Lỗi: ID null", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            FirebaseFirestore.getInstance()
-                    .collection("products")
-                    .document(product.getId())
-                    .delete()
-                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Đã xoá", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(context, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        });
+        Product product = products.get(position);
+        holder.bind(product, listener);
     }
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return products != null ? products.size() : 0;
     }
 
-    public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView textName, textPrice;
-        Button btnDelete;
+    public void updateProducts(List<Product> newProducts) {
+        this.products = newProducts;
+        notifyDataSetChanged();
+    }
 
-        public ProductViewHolder(@NonNull View itemView) {
+    static class ProductViewHolder extends RecyclerView.ViewHolder {
+        private ImageView productImage;
+        private TextView productName;
+        private TextView productBrand;
+        private TextView productPrice;
+        private Button btnAddToCart;
+
+        ProductViewHolder(View itemView) {
             super(itemView);
-            textName = itemView.findViewById(R.id.textProductName);
-            textPrice = itemView.findViewById(R.id.textProductPrice);
-            btnDelete = itemView.findViewById(R.id.buttonDelete);
+            productImage = itemView.findViewById(R.id.productImage);
+            productName = itemView.findViewById(R.id.productName);
+            productBrand = itemView.findViewById(R.id.productBrand);
+            productPrice = itemView.findViewById(R.id.productPrice);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
+        }
+
+        void bind(final Product product, final OnProductClickListener listener) {
+            productName.setText(product.getName());
+            productBrand.setText(product.getBrand());
+            
+            // Format price to VND currency
+            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            productPrice.setText(format.format(product.getPrice()));
+
+            // Load the first image from the list if available
+            if (product.getImage() != null && !product.getImage().isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(product.getImage().get(0))
+                        .placeholder(R.drawable.ic_launcher_background)
+                        .error(R.drawable.ic_launcher_background)
+                        .into(productImage);
+            } else {
+                productImage.setImageResource(R.drawable.ic_launcher_background);
+            }
+
+            itemView.setOnClickListener(v -> listener.onProductClick(product));
+            btnAddToCart.setOnClickListener(v -> listener.onAddToCartClick(product));
         }
     }
-}
+} 
