@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.adapter.ProductAdapter;
 import com.example.myapplication.model.Product;
+import com.example.myapplication.model.CartItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             startActivity(intent);
             finish();
             return true;
+        } else if (item.getItemId() == R.id.action_cart) {
+            startActivity(new Intent(this, CartActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -125,7 +129,20 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     @Override
     public void onAddToCartClick(Product product) {
-        // TODO: Add to cart functionality
-        Toast.makeText(this, "Đã thêm vào giỏ hàng: " + product.getName(), Toast.LENGTH_SHORT).show();
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập để thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = auth.getCurrentUser().getUid();
+        CartItem cartItem = new CartItem(product, 1);
+
+        db.collection("users").document(userId)
+                .collection("cart")
+                .add(cartItem)
+                .addOnSuccessListener(documentReference -> 
+                    Toast.makeText(this, "Đã thêm vào giỏ hàng: " + product.getName(), Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> 
+                    Toast.makeText(this, "Lỗi khi thêm vào giỏ hàng", Toast.LENGTH_SHORT).show());
     }
 }
