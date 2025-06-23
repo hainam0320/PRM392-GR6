@@ -73,15 +73,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             productName.setText(product.getName());
             productBrand.setText(product.getBrand());
             
-            // Format price to currency
+            // Format price to VND currency
             NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             productPrice.setText(format.format(product.getPrice()));
 
-            // Load image using Glide
-            Glide.with(itemView.getContext())
-                    .load(product.getImageUrl())
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .into(productImage);
+            // Load the first image from the list if available
+            if (product.getImage() != null && !product.getImage().isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(product.getImage().get(0))
+                        .placeholder(R.drawable.ic_launcher_background)
+                        .error(R.drawable.ic_launcher_background)
+                        .into(productImage);
+            } else {
+                productImage.setImageResource(R.drawable.ic_launcher_background);
+            }
 
             itemView.setOnClickListener(v -> listener.onProductClick(product));
             btnAddToCart.setOnClickListener(v -> listener.onAddToCartClick(product));
