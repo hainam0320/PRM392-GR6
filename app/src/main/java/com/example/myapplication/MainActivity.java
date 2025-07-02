@@ -83,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         } else if (item.getItemId() == R.id.action_cart) {
             startActivity(new Intent(this, CartActivity.class));
             return true;
+        } else if (item.getItemId() == R.id.action_edit_profile) {
+            startActivity(new Intent(this, EditProfileActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

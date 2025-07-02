@@ -11,4 +11,9 @@
         android:title="Đăng xuất"
         android:textColor="@android:color/black"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_edit_profile"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="Chỉnh sửa hồ sơ"
+        app:showAsAction="never"/>
 </menu> 
