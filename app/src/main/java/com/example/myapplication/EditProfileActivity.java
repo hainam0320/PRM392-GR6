@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
-    private TextInputEditText editTextUsername, editTextEmail;
+    private TextInputEditText editTextUsername, editTextEmail, editTextPhone, editTextAddress;
     private Button buttonSaveProfile;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -27,13 +27,20 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("");
+        }
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         editTextUsername = findViewById(R.id.editTextUsername_edit);
         editTextEmail = findViewById(R.id.editTextEmail_edit);
+        editTextPhone = findViewById(R.id.editTextPhone_edit);
+        editTextAddress = findViewById(R.id.editTextAddress_edit);
         buttonSaveProfile = findViewById(R.id.buttonSaveProfile);
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -48,14 +55,20 @@ public class EditProfileActivity extends AppCompatActivity {
             if (documentSnapshot.exists()) {
                 String username = documentSnapshot.getString("username");
                 String email = documentSnapshot.getString("email");
+                String phone = documentSnapshot.getString("phone");
+                String address = documentSnapshot.getString("address");
                 editTextUsername.setText(username);
                 editTextEmail.setText(email);
+                editTextPhone.setText(phone);
+                editTextAddress.setText(address);
             }
         });
 
         buttonSaveProfile.setOnClickListener(v -> {
             String newUsername = editTextUsername.getText().toString().trim();
             String newEmail = editTextEmail.getText().toString().trim();
+            String newPhone = editTextPhone.getText().toString().trim();
+            String newAddress = editTextAddress.getText().toString().trim();
             if (newUsername.isEmpty()) {
                 editTextUsername.setError("Tên người dùng không được để trống");
                 return;
@@ -67,6 +80,8 @@ public class EditProfileActivity extends AppCompatActivity {
             Map<String, Object> updates = new HashMap<>();
             updates.put("username", newUsername);
             updates.put("email", newEmail);
+            updates.put("phone", newPhone);
+            updates.put("address", newAddress);
             userRef.update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
@@ -82,6 +97,9 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
             finish();
             return true;
         }

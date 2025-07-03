@@ -10,4 +10,7 @@
     <string name="register_button">Đăng ký</string>
     <string name="go_to_login">Đã có tài khoản? Đăng nhập</string>
     <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="address_hint">Địa chỉ</string>
+    <string name="phone_hint">Số điện thoại</string>
+    <string name="default_web_client_id">494852197118-fdbdd1nn1omqho324ftt9766dm7tk03e.apps.googleusercontent.com</string>
 </resources>
