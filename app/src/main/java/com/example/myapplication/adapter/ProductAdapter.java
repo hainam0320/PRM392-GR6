@@ -88,8 +88,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 productImage.setImageResource(R.drawable.ic_launcher_background);
             }
 
+            // Check if product is out of stock
+            if (product.getStock() <= 0) {
+                btnAddToCart.setEnabled(false);
+                btnAddToCart.setText("HẾT HÀNG");
+                btnAddToCart.setAlpha(0.5f); // Make button appear disabled
+            } else {
+                btnAddToCart.setEnabled(true);
+                btnAddToCart.setText("THÊM VÀO GIỎ HÀNG");
+                btnAddToCart.setAlpha(1.0f);
+            }
+
             itemView.setOnClickListener(v -> listener.onProductClick(product));
-            btnAddToCart.setOnClickListener(v -> listener.onAddToCartClick(product));
+            btnAddToCart.setOnClickListener(v -> {
+                if (product.getStock() <= 0) {
+                    // Show out of stock message
+                    android.widget.Toast.makeText(itemView.getContext(), 
+                        "Sản phẩm " + product.getName() + " đã hết hàng", 
+                        android.widget.Toast.LENGTH_SHORT).show();
+                } else {
+                    listener.onAddToCartClick(product);
+                }
+            });
         }
     }
 } 
