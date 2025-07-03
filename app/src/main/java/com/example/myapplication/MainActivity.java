@@ -83,6 +83,12 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         } else if (item.getItemId() == R.id.action_cart) {
             startActivity(new Intent(this, CartActivity.class));
             return true;
+        } else if (item.getItemId() == R.id.action_edit_profile) {
+            startActivity(new Intent(this, EditProfileActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_favorites) {
+            startActivity(new Intent(this, FavoritesActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -134,15 +140,62 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             return;
         }
 
-        String userId = auth.getCurrentUser().getUid();
-        CartItem cartItem = new CartItem(product, 1);
+        // Check if product is out of stock
+        if (product.getStock() <= 0) {
+            Toast.makeText(this, "Sản phẩm " + product.getName() + " đã hết hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        String userId = auth.getCurrentUser().getUid();
+
+        // Check if product already exists in cart
         db.collection("users").document(userId)
-                .collection("cart")
-                .add(cartItem)
-                .addOnSuccessListener(documentReference -> 
-                    Toast.makeText(this, "Đã thêm vào giỏ hàng: " + product.getName(), Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> 
-                    Toast.makeText(this, "Lỗi khi thêm vào giỏ hàng", Toast.LENGTH_SHORT).show());
+            .collection("cart")
+            .whereEqualTo("product.id", product.getId())
+            .get()
+            .addOnSuccessListener(querySnapshot -> {
+                if (!querySnapshot.isEmpty()) {
+                    // Product already exists in cart
+                    CartItem existingItem = querySnapshot.getDocuments().get(0).toObject(CartItem.class);
+                    if (existingItem != null) {
+                        int newQuantity = existingItem.getQuantity() + 1;
+                        if (newQuantity > product.getStock()) {
+                            Toast.makeText(MainActivity.this, 
+                                "Không thể thêm vào giỏ hàng. Số lượng vượt quá hàng có sẵn.", 
+                                Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        // Update existing cart item quantity
+                        querySnapshot.getDocuments().get(0).getReference()
+                            .update("quantity", newQuantity)
+                            .addOnSuccessListener(aVoid -> 
+                                Toast.makeText(MainActivity.this, 
+                                    "Đã cập nhật số lượng trong giỏ hàng", 
+                                    Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> 
+                                Toast.makeText(MainActivity.this, 
+                                    "Lỗi khi cập nhật giỏ hàng", 
+                                    Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    // Add new item to cart
+                    CartItem cartItem = new CartItem(product, 1);
+                    db.collection("users").document(userId)
+                        .collection("cart")
+                        .add(cartItem)
+                        .addOnSuccessListener(documentReference -> 
+                            Toast.makeText(MainActivity.this, 
+                                "Đã thêm vào giỏ hàng: " + product.getName(), 
+                                Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> 
+                            Toast.makeText(MainActivity.this, 
+                                "Lỗi khi thêm vào giỏ hàng", 
+                                Toast.LENGTH_SHORT).show());
+                }
+            })
+            .addOnFailureListener(e -> 
+                Toast.makeText(MainActivity.this, 
+                    "Lỗi khi kiểm tra giỏ hàng", 
+                    Toast.LENGTH_SHORT).show());
     }
 }

@@ -9,4 +9,5 @@
     <string name="username_hint">Tên người dùng</string>
     <string name="register_button">Đăng ký</string>
     <string name="go_to_login">Đã có tài khoản? Đăng nhập</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
 </resources>
