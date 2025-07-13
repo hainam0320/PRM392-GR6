@@ -47,7 +47,8 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     }
 
     public void updateProducts(List<Product> newProducts) {
-        this.products = newProducts;
+        this.products.clear();
+        this.products.addAll(newProducts);
         notifyDataSetChanged();
     }
 
