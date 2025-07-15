@@ -37,21 +37,30 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <Button
-                android:id="@+id/buttonLogout"
+            <ImageButton
+                android:id="@+id/buttonMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đăng xuất"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="#2196F3"
-                android:textStyle="bold"
-                android:layout_marginEnd="4dp"
-                app:cornerRadius="12dp"
+                android:src="@android:drawable/ic_menu_more"
+                android:background="@android:color/transparent"
+                android:contentDescription="Menu"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="Tìm kiếm sản phẩm..."
+        android:padding="12dp"
+        android:background="@drawable/tab_selector"
+        app:layout_constraintTop_toBottomOf="@id/headerCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Danh sách sản phẩm -->
     <androidx.recyclerview.widget.RecyclerView
@@ -59,11 +68,23 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/headerCard"
+        app:layout_constraintTop_toBottomOf="@id/searchEditText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:clipToPadding="false"/>
+
+    <TextView
+        android:id="@+id/emptyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Không tìm thấy sản phẩm"
+        android:visibility="gone"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/searchEditText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Nút thêm -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
