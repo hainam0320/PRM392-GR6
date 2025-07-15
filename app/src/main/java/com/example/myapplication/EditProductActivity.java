@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -20,7 +22,8 @@ import java.util.List;
 
 public class EditProductActivity extends AppCompatActivity {
 
-    private EditText editName, editPrice, editStock, editBrand, editCategory, editDescription, editImageUrl;
+    private EditText editName, editPrice, editStock, editBrand, editDescription, editImageUrl;
+    private Spinner editCategory;
     private MaterialButton btnSave, btnDelete;
     private FirebaseFirestore db;
     private String productId = null;
@@ -35,6 +38,14 @@ public class EditProductActivity extends AppCompatActivity {
         editStock = findViewById(R.id.editProductStock);
         editBrand = findViewById(R.id.editProductBrand);
         editCategory = findViewById(R.id.editProductCategory);
+        // Thiết lập adapter cho Spinner
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
+            this,
+            android.R.layout.simple_spinner_item,
+            new String[]{"Giày thời trang", "Giày cao cấp", "Giày chạy bộ"}
+        );
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        editCategory.setAdapter(categoryAdapter);
         editDescription = findViewById(R.id.editProductDescription);
         editImageUrl = findViewById(R.id.editProductImageUrl);
         btnSave = findViewById(R.id.buttonSaveProduct);
@@ -55,7 +66,14 @@ public class EditProductActivity extends AppCompatActivity {
                             editPrice.setText(String.valueOf(product.getPrice()));
                             editStock.setText(String.valueOf(product.getStock()));
                             editBrand.setText(product.getBrand());
-                            editCategory.setText(product.getCategory());
+                            // Đặt giá trị cho Spinner
+                            String[] categories = {"Giày thời trang", "Giày cao cấp", "Giày chạy bộ"};
+                            for (int i = 0; i < categories.length; i++) {
+                                if (categories[i].equals(product.getCategory())) {
+                                    editCategory.setSelection(i);
+                                    break;
+                                }
+                            }
                             editDescription.setText(product.getDescription());
                             if (product.getImage() != null && !product.getImage().isEmpty()) {
                                 editImageUrl.setText(product.getImage().get(0));
@@ -107,7 +125,7 @@ public class EditProductActivity extends AppCompatActivity {
         String priceStr = editPrice.getText().toString().trim();
         String stockStr = editStock.getText().toString().trim();
         String brand = editBrand.getText().toString().trim();
-        String category = editCategory.getText().toString().trim();
+        String category = editCategory.getSelectedItem().toString();
         String description = editDescription.getText().toString().trim();
         String imageUrl = editImageUrl.getText().toString().trim();
 

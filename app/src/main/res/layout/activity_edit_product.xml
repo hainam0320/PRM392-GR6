@@ -82,19 +82,18 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Loại -->
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editProductCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Loại sản phẩm"
-                android:inputType="text"/>
-        </com.google.android.material.textfield.TextInputLayout>
+            android:text="Loại sản phẩm"
+            android:textSize="16sp"
+            android:textColor="#666"
+            android:layout_marginBottom="4dp"/>
+        <Spinner
+            android:id="@+id/editProductCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Mô tả -->
         <com.google.android.material.textfield.TextInputLayout

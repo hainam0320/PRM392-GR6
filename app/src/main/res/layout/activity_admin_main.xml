@@ -37,16 +37,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <Button
-                android:id="@+id/buttonLogout"
+            <ImageButton
+                android:id="@+id/buttonMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đăng xuất"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="#2196F3"
-                android:textStyle="bold"
-                android:layout_marginEnd="4dp"
-                app:cornerRadius="12dp"
+                android:src="@android:drawable/ic_menu_more"
+                android:background="@android:color/transparent"
+                android:contentDescription="Menu"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>

@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.ImageButton;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,8 +38,10 @@ public class AdminMainActivity extends AppCompatActivity implements AdminProduct
     private FirebaseFirestore db;
     private FloatingActionButton fabAdd;
     private Button buttonLogout;
+    private Button buttonOrderManagement;
     private EditText searchEditText;
     private TextView emptyView;
+    private ImageButton buttonMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,15 +65,31 @@ public class AdminMainActivity extends AppCompatActivity implements AdminProduct
             startActivity(intent);
         });
 
-        // Xử lý nút Đăng xuất
-        buttonLogout = findViewById(R.id.buttonLogout);
-        buttonLogout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            Toast.makeText(AdminMainActivity.this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+        buttonMenu = findViewById(R.id.buttonMenu);
+        buttonMenu.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(AdminMainActivity.this, buttonMenu);
+            popup.getMenuInflater().inflate(R.menu.admin_popup_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_order) {
+                    Intent intent = new Intent(AdminMainActivity.this, OrderListActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.menu_user) {
+                    Intent intent = new Intent(AdminMainActivity.this, UserListActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (item.getItemId() == R.id.menu_logout) {
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(AdminMainActivity.this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                }
+                return false;
+            });
+            popup.show();
         });
 
         searchEditText = findViewById(R.id.searchEditText);
