@@ -55,6 +55,7 @@
             android:exported="false" />
         <activity android:name=".OrderListActivity" />
         <activity android:name=".OrderDetailActivity" />
+        <activity android:name=".UserOrderDetailActivity" />
         <activity android:name=".UserListActivity" />
         <activity android:name=".UserDetailActivity" />
     </application>

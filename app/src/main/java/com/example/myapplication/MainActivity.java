@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
             auth.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
@@ -131,8 +131,11 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         } else if (item.getItemId() == R.id.action_edit_profile) {
             startActivity(new Intent(this, EditProfileActivity.class));
             return true;
-        } else if (item.getItemId() == R.id.action_favorites) {
+        } else if (item.getItemId() == R.id.action_favorite) {
             startActivity(new Intent(this, FavoritesActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_orders) {
+            startActivity(new Intent(this, OrderListActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
