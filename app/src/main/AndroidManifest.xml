@@ -58,5 +58,6 @@
         <activity android:name=".UserOrderDetailActivity" />
         <activity android:name=".UserListActivity" />
         <activity android:name=".UserDetailActivity" />
+        <activity android:name=".StatisticsActivity" android:exported="false" />
     </application>
 </manifest>
