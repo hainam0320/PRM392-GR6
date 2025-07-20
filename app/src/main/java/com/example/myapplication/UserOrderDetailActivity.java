@@ -27,6 +27,13 @@ import java.util.Locale;
 import androidx.core.content.ContextCompat;
 import com.example.myapplication.model.Product;
 import java.util.Map;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.app.AlertDialog;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.example.myapplication.model.Review;
 
 public class UserOrderDetailActivity extends AppCompatActivity {
     private static final String TAG = "UserOrderDetail";
@@ -45,6 +52,7 @@ public class UserOrderDetailActivity extends AppCompatActivity {
     private List<CartItem> orderDetails;
     private SimpleDateFormat dateFormat;
     private NumberFormat currencyFormat;
+    private Order order; // Added to store the order object for review check
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +101,7 @@ public class UserOrderDetailActivity extends AppCompatActivity {
 
         // Setup RecyclerView
         orderDetails = new ArrayList<>();
-        detailAdapter = new OrderDetailAdapter(orderDetails);
+        detailAdapter = new OrderDetailAdapter(orderDetails, this::showReviewDialog);
         recyclerViewDetails.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDetails.setAdapter(detailAdapter);
     }
@@ -109,6 +117,7 @@ public class UserOrderDetailActivity extends AppCompatActivity {
                     Order order = documentSnapshot.toObject(Order.class);
                     if (order != null && order.getUserId().equals(userId)) {
                         order.setId(documentSnapshot.getId());
+                        this.order = order; // Assign order to the class variable
                         displayOrderInfo(order);
                         loadOrderItems(orderId);
                     } else {
@@ -218,7 +227,13 @@ public class UserOrderDetailActivity extends AppCompatActivity {
                                             product.setName(productData.get("name") != null ? productData.get("name").toString() : "");
                                             product.setPrice(productData.get("price") != null ? 
                                                 Double.parseDouble(productData.get("price").toString()) : 0.0);
-                                            // Add other product fields as needed
+                                            
+                                            // Get and set product images
+                                            @SuppressWarnings("unchecked")
+                                            List<String> images = (List<String>) productData.get("image");
+                                            if (images != null && !images.isEmpty()) {
+                                                product.setImage(images);
+                                            }
                                         }
                                     }
                                     
@@ -241,11 +256,11 @@ public class UserOrderDetailActivity extends AppCompatActivity {
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error parsing order item: " + doc.getId(), e);
-                                // Continue with next item instead of breaking
                                 continue;
                             }
                         }
-                        detailAdapter.notifyDataSetChanged();
+                        detailAdapter = new OrderDetailAdapter(orderDetails, this::showReviewDialog);
+                        recyclerViewDetails.setAdapter(detailAdapter);
                     } catch (Exception e) {
                         Log.e(TAG, "Error processing order items", e);
                         Toast.makeText(UserOrderDetailActivity.this, 
@@ -259,6 +274,125 @@ public class UserOrderDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lỗi khi tải chi tiết đơn hàng", Toast.LENGTH_SHORT).show();
                 }
             });
+    }
+
+    private void showReviewDialog(Product product) {
+        // Kiểm tra xem đơn hàng đã hoàn thành chưa
+        if (!"completed".equalsIgnoreCase(order.getStatus())) {
+            Toast.makeText(this, "Chỉ có thể đánh giá khi đơn hàng đã hoàn thành", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra xem đã đánh giá chưa
+        db.collection("reviews")
+            .whereEqualTo("productId", product.getId())
+            .whereEqualTo("orderId", orderId)
+            .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    Toast.makeText(this, "Bạn đã đánh giá sản phẩm này", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Tạo dialog đánh giá
+                View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_review, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                TextView productNameView = dialogView.findViewById(R.id.productName);
+                RatingBar ratingBar = dialogView.findViewById(R.id.ratingBar);
+                TextInputEditText reviewInput = dialogView.findViewById(R.id.reviewInput);
+
+                productNameView.setText(product.getName());
+
+                builder.setView(dialogView)
+                    .setTitle("Đánh giá sản phẩm")
+                    .setPositiveButton("Gửi", (dialog, which) -> {
+                        String content = reviewInput.getText().toString().trim();
+                        float rating = ratingBar.getRating();
+
+                        if (content.isEmpty()) {
+                            Toast.makeText(this, "Vui lòng nhập nội dung đánh giá", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        submitReview(product, content, rating);
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+            })
+            .addOnFailureListener(e -> {
+                Log.e(TAG, "Error checking existing review", e);
+                Toast.makeText(this, "Lỗi khi kiểm tra đánh giá", Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void submitReview(Product product, String content, float rating) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        
+        // Lấy username từ Firestore
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener(documentSnapshot -> {
+                String username = documentSnapshot.getString("username");
+                if (username == null) username = "Người dùng ẩn danh";
+
+                Review review = new Review();
+                review.setUserId(userId);
+                review.setProductId(product.getId());
+                review.setOrderId(orderId);
+                review.setUsername(username);
+                review.setContent(content);
+                review.setRating(rating);
+
+                // Lưu đánh giá vào Firestore
+                db.collection("reviews")
+                    .add(review)
+                    .addOnSuccessListener(documentReference -> {
+                        review.setId(documentReference.getId());
+                        Toast.makeText(this, "Đã gửi đánh giá", Toast.LENGTH_SHORT).show();
+                        
+                        // Cập nhật rating trung bình của sản phẩm
+                        updateProductRating(product.getId());
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error submitting review", e);
+                        Toast.makeText(this, "Lỗi khi gửi đánh giá", Toast.LENGTH_SHORT).show();
+                    });
+            })
+            .addOnFailureListener(e -> {
+                Log.e(TAG, "Error getting username", e);
+                Toast.makeText(this, "Lỗi khi lấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void updateProductRating(String productId) {
+        db.collection("reviews")
+            .whereEqualTo("productId", productId)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                if (queryDocumentSnapshots.isEmpty()) return;
+
+                float totalRating = 0;
+                int count = 0;
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    Review review = doc.toObject(Review.class);
+                    if (review != null) {
+                        totalRating += review.getRating();
+                        count++;
+                    }
+                }
+
+                float averageRating = totalRating / count;
+
+                // Cập nhật rating trung bình vào sản phẩm
+                db.collection("products").document(productId)
+                    .update("averageRating", averageRating,
+                            "reviewCount", count)
+                    .addOnFailureListener(e -> 
+                        Log.e(TAG, "Error updating product rating", e));
+            })
+            .addOnFailureListener(e -> 
+                Log.e(TAG, "Error calculating average rating", e));
     }
 
     @Override

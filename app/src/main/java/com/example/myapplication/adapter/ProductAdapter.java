@@ -21,6 +21,7 @@ import java.util.List;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
+import android.widget.RatingBar;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private List<Product> products;
@@ -88,6 +89,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         private TextView productPrice;
         private Button btnAddToCart;
         private ImageButton btnFavorite;
+        private RatingBar productRating;
+        private TextView ratingValue;
         private boolean isFavorite = false;
 
         ProductViewHolder(View itemView) {
@@ -98,6 +101,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             productPrice = itemView.findViewById(R.id.productPrice);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
             btnFavorite = itemView.findViewById(R.id.btnFavorite);
+            productRating = itemView.findViewById(R.id.productRating);
+            ratingValue = itemView.findViewById(R.id.ratingValue);
         }
 
         void updateFavoriteButton(boolean favorite) {
@@ -114,6 +119,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             // Format price to VND currency
             NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             productPrice.setText(format.format(product.getPrice()));
+
+            // Set rating
+            float rating = product.getAverageRating();
+            productRating.setRating(rating);
+            ratingValue.setText(String.format("%.1f", rating));
 
             // Load the first image from the list if available
             if (product.getImage() != null && !product.getImage().isEmpty()) {

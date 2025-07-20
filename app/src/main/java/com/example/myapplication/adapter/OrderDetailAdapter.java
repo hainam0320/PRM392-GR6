@@ -5,11 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.model.CartItem;
+import com.example.myapplication.model.Product;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -17,9 +19,15 @@ import java.util.Locale;
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.OrderDetailViewHolder> {
     private List<CartItem> items;
     private final NumberFormat currencyFormat;
+    private final OnReviewClickListener reviewListener;
 
-    public OrderDetailAdapter(List<CartItem> items) {
+    public interface OnReviewClickListener {
+        void onReviewClick(Product product);
+    }
+
+    public OrderDetailAdapter(List<CartItem> items, OnReviewClickListener listener) {
         this.items = items;
+        this.reviewListener = listener;
         this.currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     }
 
@@ -48,6 +56,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         private final TextView productPrice;
         private final TextView productQuantity;
         private final TextView productTotal;
+        private final Button btnReview;
 
         OrderDetailViewHolder(View itemView) {
             super(itemView);
@@ -56,6 +65,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
             productPrice = itemView.findViewById(R.id.productPrice);
             productQuantity = itemView.findViewById(R.id.productQuantity);
             productTotal = itemView.findViewById(R.id.productTotal);
+            btnReview = itemView.findViewById(R.id.btnReview);
         }
 
         void bind(CartItem item) {
@@ -66,6 +76,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                     productQuantity.setText("x0");
                     productTotal.setText("0 ₫");
                     productImage.setImageResource(R.drawable.ic_launcher_background);
+                    btnReview.setVisibility(View.GONE);
                     return;
                 }
 
@@ -89,6 +100,12 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                 productPrice.setText(currencyFormat.format(price));
                 productQuantity.setText("x" + item.getQuantity());
                 productTotal.setText(currencyFormat.format(price * item.getQuantity()));
+
+                // Hide review button for admin view (when reviewListener is null)
+                btnReview.setVisibility(reviewListener != null ? View.VISIBLE : View.GONE);
+                if (reviewListener != null) {
+                    btnReview.setOnClickListener(v -> reviewListener.onReviewClick(item.getProduct()));
+                }
             } catch (Exception e) {
                 // Log error but don't crash
                 e.printStackTrace();
@@ -98,6 +115,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                 productQuantity.setText("x0");
                 productTotal.setText("0 ₫");
                 productImage.setImageResource(R.drawable.ic_launcher_background);
+                btnReview.setVisibility(View.GONE);
             }
         }
     }

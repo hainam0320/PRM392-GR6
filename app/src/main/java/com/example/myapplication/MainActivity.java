@@ -148,9 +148,6 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         db.collection("products")
                 .get()
                 .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(View.GONE);
-                    productsRecyclerView.setVisibility(View.VISIBLE);
-                    
                     if (task.isSuccessful() && task.getResult() != null) {
                         List<Product> products = new ArrayList<>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
@@ -158,10 +155,37 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                                 Product product = document.toObject(Product.class);
                                 product.setId(document.getId());
                                 products.add(product);
+                                
+                                // Calculate average rating for this product
+                                String productId = document.getId();
+                                db.collection("reviews")
+                                    .whereEqualTo("productId", productId)
+                                    .get()
+                                    .addOnSuccessListener(reviewsSnapshot -> {
+                                        if (!reviewsSnapshot.isEmpty()) {
+                                            float totalRating = 0;
+                                            int count = 0;
+                                            for (QueryDocumentSnapshot reviewDoc : reviewsSnapshot) {
+                                                float rating = reviewDoc.getDouble("rating").floatValue();
+                                                totalRating += rating;
+                                                count++;
+                                            }
+                                            float averageRating = totalRating / count;
+                                            product.setAverageRating(averageRating);
+                                            // Update the adapter to reflect the new rating
+                                            productAdapter.notifyDataSetChanged();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> 
+                                        Log.e(TAG, "Error getting reviews for product " + productId, e));
                             } catch (Exception e) {
                                 Log.e(TAG, "Error converting document " + document.getId(), e);
                             }
                         }
+                        
+                        progressBar.setVisibility(View.GONE);
+                        productsRecyclerView.setVisibility(View.VISIBLE);
+                        
                         allProducts.clear();
                         allProducts.addAll(products);
                         setupCategorySpinner();
@@ -172,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                             Toast.makeText(MainActivity.this, "Không tìm thấy sản phẩm nào", Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        progressBar.setVisibility(View.GONE);
                         Log.e(TAG, "Error getting products", task.getException());
                         Toast.makeText(MainActivity.this, "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
                     }

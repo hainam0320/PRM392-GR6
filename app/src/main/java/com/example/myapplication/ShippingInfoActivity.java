@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
 
 public class ShippingInfoActivity extends AppCompatActivity {
     private TextInputEditText nameInput;
@@ -188,18 +189,62 @@ public class ShippingInfoActivity extends AppCompatActivity {
                 .add(order)
                 .addOnSuccessListener(documentReference -> {
                     String orderId = documentReference.getId();
-                    
-                    // Lưu chi tiết đơn hàng
-                    Map<String, Object> orderDetails = new HashMap<>();
-                    orderDetails.put("productIds", productIds);
-                    orderDetails.put("quantities", quantities);
-                    
+                    // Set ID cho đơn hàng
+                    order.setId(orderId);
+                    // Cập nhật lại đơn hàng với ID
                     db.collection("orders")
                             .document(orderId)
-                            .collection("details")
-                            .add(orderDetails)
-                            .addOnSuccessListener(detailRef -> clearCartAndFinish())
-                            .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi lưu chi tiết đơn hàng", Toast.LENGTH_SHORT).show());
+                            .set(order)
+                            .addOnSuccessListener(aVoid -> {
+                                // Lưu chi tiết đơn hàng với thông tin sản phẩm đầy đủ
+                                for (int i = 0; i < productIds.size(); i++) {
+                                    String productId = productIds.get(i);
+                                    int quantity = quantities.get(i);
+                                    
+                                    // Lấy thông tin sản phẩm từ Firestore
+                                    db.collection("products").document(productId)
+                                        .get()
+                                        .addOnSuccessListener(productDoc -> {
+                                            if (productDoc.exists()) {
+                                                Map<String, Object> orderDetail = new HashMap<>();
+                                                Map<String, Object> productData = new HashMap<>();
+                                                
+                                                // Copy toàn bộ thông tin sản phẩm
+                                                productData.put("id", productDoc.getId());
+                                                productData.put("name", productDoc.getString("name"));
+                                                productData.put("price", productDoc.getDouble("price"));
+                                                productData.put("brand", productDoc.getString("brand"));
+                                                productData.put("category", productDoc.getString("category"));
+                                                
+                                                // Lưu hình ảnh dưới dạng List<String>
+                                                @SuppressWarnings("unchecked")
+                                                List<String> images = (List<String>) productDoc.get("image");
+                                                if (images != null && !images.isEmpty()) {
+                                                    productData.put("image", images);
+                                                }
+                                                
+                                                orderDetail.put("product", productData);
+                                                orderDetail.put("quantity", quantity);
+                                                
+                                                // Lưu chi tiết vào subcollection của đơn hàng
+                                                db.collection("orders")
+                                                    .document(orderId)
+                                                    .collection("details")
+                                                    .add(orderDetail)
+                                                    .addOnFailureListener(e -> 
+                                                        Toast.makeText(ShippingInfoActivity.this, 
+                                                            "Lỗi khi lưu chi tiết đơn hàng", Toast.LENGTH_SHORT).show());
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> 
+                                            Toast.makeText(ShippingInfoActivity.this, 
+                                                "Lỗi khi lấy thông tin sản phẩm", Toast.LENGTH_SHORT).show());
+                                }
+                                
+                                // Xóa giỏ hàng sau khi lưu xong
+                                clearCartAndFinish();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi cập nhật đơn hàng", Toast.LENGTH_SHORT).show());
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi đặt hàng", Toast.LENGTH_SHORT).show());
     }
