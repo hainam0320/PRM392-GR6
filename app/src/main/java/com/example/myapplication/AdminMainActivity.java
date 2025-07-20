@@ -93,6 +93,10 @@ public class AdminMainActivity extends AppCompatActivity implements AdminProduct
                     startActivity(intent);
                     finish();
                     return true;
+                } else if (item.getItemId() == R.id.menu_report) {
+                    Intent intent = new Intent(AdminMainActivity.this, ProductPerformanceActivity.class);
+                    startActivity(intent);
+                    return true;
                 }
                 return false;
             });
