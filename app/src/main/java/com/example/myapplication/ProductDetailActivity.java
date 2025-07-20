@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.RatingBar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,11 +12,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.myapplication.adapter.ImageSliderAdapter;
 import com.example.myapplication.model.Product;
 import com.example.myapplication.model.CartItem;
+import com.example.myapplication.model.Review;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -29,6 +32,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView productCategory;
     private TextView productStock;
     private MaterialButton btnAddToCart;
+    private RatingBar productRating;
+    private TextView ratingValue;
+    private TextView reviewCount;
     private FirebaseFirestore db;
 
     @Override
@@ -56,15 +62,62 @@ public class ProductDetailActivity extends AppCompatActivity {
         productCategory = findViewById(R.id.productCategory);
         productStock = findViewById(R.id.productStock);
         btnAddToCart = findViewById(R.id.btnAddToCart);
+        productRating = findViewById(R.id.productRating);
+        ratingValue = findViewById(R.id.ratingValue);
+        reviewCount = findViewById(R.id.reviewCount);
 
         // Get product ID from intent
         String productId = getIntent().getStringExtra("product_id");
         if (productId != null) {
             loadProductDetails(productId);
+            loadReviews(productId);
         } else {
             Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    private void loadReviews(String productId) {
+        // First, load the average rating
+        db.collection("reviews")
+            .whereEqualTo("productId", productId)
+            .get()
+            .addOnSuccessListener(querySnapshot -> {
+                float totalRating = 0;
+                int count = 0;
+
+                for (com.google.firebase.firestore.QueryDocumentSnapshot document : querySnapshot) {
+                    try {
+                        Review review = document.toObject(Review.class);
+                        if (review != null) {
+                            totalRating += review.getRating();
+                            count++;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Update rating display
+                if (count > 0) {
+                    float averageRating = totalRating / count;
+                    productRating.setRating(averageRating);
+                    ratingValue.setText(String.format(Locale.getDefault(), "%.1f", averageRating));
+                    reviewCount.setText(String.format(Locale.getDefault(), "(%d đánh giá)", count));
+                } else {
+                    productRating.setRating(0);
+                    ratingValue.setText("0.0");
+                    reviewCount.setText("(0 đánh giá)");
+                }
+            })
+            .addOnFailureListener(e -> {
+                e.printStackTrace();
+                Toast.makeText(this, "Lỗi khi tải đánh giá", Toast.LENGTH_SHORT).show();
+                // Set default values in case of error
+                productRating.setRating(0);
+                ratingValue.setText("0.0");
+                reviewCount.setText("(0 đánh giá)");
+            });
     }
 
     private void loadProductDetails(String productId) {

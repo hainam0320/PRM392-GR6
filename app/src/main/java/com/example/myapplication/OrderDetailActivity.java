@@ -95,7 +95,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         recyclerViewDetails = findViewById(R.id.recyclerViewDetails);
 
         recyclerViewDetails.setLayoutManager(new LinearLayoutManager(this));
-        detailAdapter = new OrderDetailAdapter(orderDetails);
+        // Pass null as review listener for admin view
+        detailAdapter = new OrderDetailAdapter(orderDetails, null);
         recyclerViewDetails.setAdapter(detailAdapter);
 
         // Setup spinner
@@ -180,6 +181,13 @@ public class OrderDetailActivity extends AppCompatActivity {
                                         product.setName(productData.get("name") != null ? productData.get("name").toString() : "");
                                         product.setPrice(productData.get("price") != null ? 
                                             Double.parseDouble(productData.get("price").toString()) : 0.0);
+                                            
+                                        // Get and set product images
+                                        @SuppressWarnings("unchecked")
+                                        List<String> images = (List<String>) productData.get("image");
+                                        if (images != null && !images.isEmpty()) {
+                                            product.setImage(images);
+                                        }
                                     }
                                 }
                                 
