@@ -42,6 +42,7 @@ public class AdminMainActivity extends AppCompatActivity implements AdminProduct
     private EditText searchEditText;
     private TextView emptyView;
     private ImageButton buttonMenu;
+    private FloatingActionButton fabStatistics;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +63,12 @@ public class AdminMainActivity extends AppCompatActivity implements AdminProduct
         fabAdd = findViewById(R.id.fabAddProduct);
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(AdminMainActivity.this, EditProductActivity.class);
+            startActivity(intent);
+        });
+
+        fabStatistics = findViewById(R.id.fabStatistics);
+        fabStatistics.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminMainActivity.this, StatisticsActivity.class);
             startActivity(intent);
         });
 

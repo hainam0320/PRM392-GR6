@@ -11,9 +11,11 @@ public class Product {
     private String category;
     private String description;
     private List<String> image;
+    private float averageRating;  // New field for average rating
 
     public Product() {
         // Empty constructor needed for Firebase
+        this.averageRating = 0.0f;  // Default rating
     }
 
     public Product(String name, double price, int stock, String brand, String category, String description, List<String> image) {
@@ -24,6 +26,7 @@ public class Product {
         this.category = category;
         this.description = description;
         this.image = image;
+        this.averageRating = 0.0f;  // Default rating
     }
 
     // Getters and Setters
@@ -50,4 +53,7 @@ public class Product {
 
     public List<String> getImage() { return image; }
     public void setImage(List<String> image) { this.image = image; }
+
+    public float getAverageRating() { return averageRating; }
+    public void setAverageRating(float averageRating) { this.averageRating = averageRating; }
 } 

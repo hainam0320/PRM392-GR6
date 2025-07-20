@@ -38,6 +38,11 @@ public class EditProductActivity extends AppCompatActivity {
         editStock = findViewById(R.id.editProductStock);
         editBrand = findViewById(R.id.editProductBrand);
         editCategory = findViewById(R.id.editProductCategory);
+        editDescription = findViewById(R.id.editProductDescription);
+        editImageUrl = findViewById(R.id.editProductImageUrl);
+        btnSave = findViewById(R.id.buttonSaveProduct);
+        btnDelete = findViewById(R.id.buttonDeleteProduct);
+
         // Thiết lập adapter cho Spinner
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
             this,
@@ -46,55 +51,51 @@ public class EditProductActivity extends AppCompatActivity {
         );
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         editCategory.setAdapter(categoryAdapter);
-        editDescription = findViewById(R.id.editProductDescription);
-        editImageUrl = findViewById(R.id.editProductImageUrl);
-        btnSave = findViewById(R.id.buttonSaveProduct);
-        btnDelete = findViewById(R.id.buttonDeleteProduct);
 
         db = FirebaseFirestore.getInstance();
 
         productId = getIntent().getStringExtra("productId");
         if (productId != null) {
             // Load product data from Firestore
-            db.collection("products").document(productId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Product product = documentSnapshot.toObject(Product.class);
-                        if (product != null) {
-                            editName.setText(product.getName());
-                            editPrice.setText(String.valueOf(product.getPrice()));
-                            editStock.setText(String.valueOf(product.getStock()));
-                            editBrand.setText(product.getBrand());
-                            // Đặt giá trị cho Spinner
-                            String[] categories = {"Giày thời trang", "Giày cao cấp", "Giày chạy bộ"};
-                            for (int i = 0; i < categories.length; i++) {
-                                if (categories[i].equals(product.getCategory())) {
-                                    editCategory.setSelection(i);
-                                    break;
-                                }
-                            }
-                            editDescription.setText(product.getDescription());
-                            if (product.getImage() != null && !product.getImage().isEmpty()) {
-                                editImageUrl.setText(product.getImage().get(0));
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> 
-                    Toast.makeText(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
-            
-            // Hiển thị nút xóa chỉ khi đang chỉnh sửa sản phẩm
-            btnDelete.setVisibility(View.VISIBLE);
+            loadProductData();
         } else {
             // Ẩn nút xóa khi đang thêm sản phẩm mới
             btnDelete.setVisibility(View.GONE);
         }
 
         btnSave.setOnClickListener(v -> saveProduct());
-
         btnDelete.setOnClickListener(v -> showDeleteConfirmation());
+    }
+
+    private void loadProductData() {
+        db.collection("products").document(productId)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Product product = documentSnapshot.toObject(Product.class);
+                    if (product != null) {
+                        editName.setText(product.getName());
+                        editPrice.setText(String.valueOf(product.getPrice()));
+                        editStock.setText(String.valueOf(product.getStock()));
+                        editBrand.setText(product.getBrand());
+                        // Đặt giá trị cho Spinner
+                        String[] categories = {"Giày thời trang", "Giày cao cấp", "Giày chạy bộ"};
+                        for (int i = 0; i < categories.length; i++) {
+                            if (categories[i].equals(product.getCategory())) {
+                                editCategory.setSelection(i);
+                                break;
+                            }
+                        }
+                        editDescription.setText(product.getDescription());
+                        if (product.getImage() != null && !product.getImage().isEmpty()) {
+                            editImageUrl.setText(product.getImage().get(0));
+                        }
+                    }
+                }
+            })
+            .addOnFailureListener(e -> 
+                Toast.makeText(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+            );
     }
 
     private void showDeleteConfirmation() {
