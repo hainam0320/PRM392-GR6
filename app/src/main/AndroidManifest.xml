@@ -61,6 +61,7 @@
         <activity android:name=".StatisticsActivity" android:exported="false" />
         <activity android:name=".ProductReviewsActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
+        <activity android:name=".ProductPerformanceActivity" android:exported="false" />
 
         </application>
 </manifest>
