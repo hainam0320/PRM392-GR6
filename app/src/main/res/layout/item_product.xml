@@ -22,7 +22,7 @@
                 android:id="@+id/productImage"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop" />
 
             <ImageButton
                 android:id="@+id/btnFavorite"
@@ -92,6 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@color/bgc"
             android:text="THÊM VÀO GIỎ HÀNG"
             android:textSize="12sp"/>
     </LinearLayout>

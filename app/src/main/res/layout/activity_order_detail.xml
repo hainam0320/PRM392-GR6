@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/bgc"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <ScrollView
@@ -108,6 +108,7 @@
                     android:id="@+id/btnSaveStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/bgc"
                     android:text="Lưu trạng thái"
                     android:layout_marginStart="12dp"/>
             </LinearLayout>
