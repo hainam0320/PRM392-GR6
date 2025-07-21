@@ -60,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin = findViewById(R.id.buttonLogin);
         textViewGoToRegister = findViewById(R.id.textViewGoToRegister);
         SignInButton buttonGoogleSignIn = findViewById(R.id.buttonGoogleSignIn);
-        Button buttonRegister = findViewById(R.id.buttonRegister);
 
         // Cấu hình Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -70,11 +69,6 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         buttonGoogleSignIn.setOnClickListener(v -> signInWithGoogle());
-
-        buttonRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
